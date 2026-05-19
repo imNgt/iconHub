@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import type { Icon } from '../data/iconSets';
-import BaseNumberInput from './base/BaseNumberInput.vue';
-import IconEditor from './IconEditor.vue';
+import { ref, computed, watch } from "vue";
+import type { Icon } from "../data/iconSets";
+import BaseNumberInput from "./base/BaseNumberInput.vue";
+import IconEditor from "./IconEditor.vue";
 
 const props = defineProps<{
   visible: boolean;
@@ -12,52 +12,66 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'close'): void;
+  (e: "close"): void;
 }>();
 
 const showEditor = ref(false);
 const previewSize = ref(48);
-const previewColor = ref('#94a3b8');
-const previewColor2 = ref('#764ba2');
+const previewColor = ref("#94a3b8");
+const previewColor2 = ref("#764ba2");
 
-watch(() => props.icon, (newIcon) => {
-  if (newIcon) {
-    previewSize.value = 48;
-    const matches = newIcon.svg.match(/stop-color:#[0-9A-Fa-f]{3,6}/g);
-    if (matches && matches.length >= 2) {
-      const start = matches[0].slice(11);
-      const end = matches[1].slice(11);
-      previewColor.value = start;
-      previewColor2.value = end;
-    } else {
-      const fillMatch = newIcon.svg.match(/fill="([^"]+)"/);
-      const strokeMatch = newIcon.svg.match(/stroke="([^"]+)"/);
-      
-      if (fillMatch && fillMatch[1] && !fillMatch[1].includes('none') && !fillMatch[1].includes('currentColor')) {
-        previewColor.value = fillMatch[1];
-      } else if (strokeMatch && strokeMatch[1] && !strokeMatch[1].includes('none') && !strokeMatch[1].includes('currentColor')) {
-        previewColor.value = strokeMatch[1];
+watch(
+  () => props.icon,
+  (newIcon) => {
+    if (newIcon) {
+      previewSize.value = 48;
+      const matches = newIcon.svg.match(/stop-color:#[0-9A-Fa-f]{3,6}/g);
+      if (matches && matches.length >= 2) {
+        const start = matches[0].slice(11);
+        const end = matches[1].slice(11);
+        previewColor.value = start;
+        previewColor2.value = end;
       } else {
-        previewColor.value = '#94a3b8';
+        const fillMatch = newIcon.svg.match(/fill="([^"]+)"/);
+        const strokeMatch = newIcon.svg.match(/stroke="([^"]+)"/);
+
+        if (
+          fillMatch &&
+          fillMatch[1] &&
+          !fillMatch[1].includes("none") &&
+          !fillMatch[1].includes("currentColor")
+        ) {
+          previewColor.value = fillMatch[1];
+        } else if (
+          strokeMatch &&
+          strokeMatch[1] &&
+          !strokeMatch[1].includes("none") &&
+          !strokeMatch[1].includes("currentColor")
+        ) {
+          previewColor.value = strokeMatch[1];
+        } else {
+          previewColor.value = "#94a3b8";
+        }
+        previewColor2.value = "#764ba2";
       }
-      previewColor2.value = '#764ba2';
     }
-  }
-});
+  },
+);
 
 const previewSvg = computed(() => {
-  if (!props.icon) return '';
+  if (!props.icon) return "";
   let svg = props.icon.svg;
 
-  if (props.setId === 'gradient') {
-    const gradientId = `g-${previewColor.value.replace('#', '')}-${previewColor2.value.replace('#', '')}`;
+  if (props.setId === "gradient") {
+    const gradientId = `g-${previewColor.value.replace("#", "")}-${previewColor2.value.replace("#", "")}`;
     svg = svg.replace(/id="g\d+"/g, `id="${gradientId}"`);
     svg = svg.replace(/url\(#g\d+\)/g, `url(#${gradientId})`);
 
     let stopIndex = 0;
     svg = svg.replace(
       /stop-color:#[0-9A-Fa-f]{3,6}/g,
-      () => `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
+      () =>
+        `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
     );
   } else {
     svg = svg.replace(
@@ -72,18 +86,19 @@ const previewSvg = computed(() => {
 });
 
 const downloadSvgData = computed(() => {
-  if (!props.icon) return '';
+  if (!props.icon) return "";
   let svg = props.icon.svg;
 
-  if (props.setId === 'gradient') {
-    const gradientId = `g-${previewColor.value.replace('#', '')}-${previewColor2.value.replace('#', '')}`;
+  if (props.setId === "gradient") {
+    const gradientId = `g-${previewColor.value.replace("#", "")}-${previewColor2.value.replace("#", "")}`;
     svg = svg.replace(/id="g\d+"/g, `id="${gradientId}"`);
     svg = svg.replace(/url\(#g\d+\)/g, `url(#${gradientId})`);
 
     let stopIndex = 0;
     svg = svg.replace(
       /stop-color:#[0-9A-Fa-f]{3,6}/g,
-      () => `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
+      () =>
+        `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
     );
   } else {
     svg = svg
@@ -102,9 +117,9 @@ const downloadSvgData = computed(() => {
 const downloadSvg = () => {
   if (!props.icon) return;
   const data = downloadSvgData.value;
-  const blob = new Blob([data], { type: 'image/svg+xml' });
+  const blob = new Blob([data], { type: "image/svg+xml" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = `${props.icon.name}.svg`;
   a.click();
@@ -114,8 +129,8 @@ const downloadSvg = () => {
 const downloadPng = async () => {
   if (!props.icon) return;
   const data = previewSvg.value;
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
   canvas.width = previewSize.value * 4;
@@ -124,12 +139,12 @@ const downloadPng = async () => {
   const img = new Image();
   img.onload = () => {
     ctx.scale(4, 4);
-    ctx.fillStyle = 'transparent';
+    ctx.fillStyle = "transparent";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
 
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
+    const url = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
     a.href = url;
     a.download = `${props.icon!.name}.png`;
     a.click();
@@ -143,7 +158,7 @@ const copySvg = () => {
 };
 
 const closeModal = () => {
-  emit('close');
+  emit("close");
 };
 </script>
 
@@ -184,24 +199,6 @@ const closeModal = () => {
             <span class="modal-category">{{ icon.category }}</span>
           </div>
 
-          <button class="editor-toggle-btn" @click="showEditor = !showEditor">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M12 20h9" />
-              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-            </svg>
-            {{ showEditor ? '关闭编辑器' : '打开编辑器' }}
-          </button>
-
           <div v-if="!showEditor" class="preview-controls">
             <div class="preview-size-control">
               <label>尺寸</label>
@@ -227,11 +224,7 @@ const closeModal = () => {
             </template>
             <div v-else class="preview-color-control">
               <label>颜色</label>
-              <input
-                type="color"
-                v-model="previewColor"
-                class="color-picker"
-              />
+              <input type="color" v-model="previewColor" class="color-picker" />
             </div>
           </div>
 
@@ -292,7 +285,9 @@ const closeModal = () => {
                   stroke-linejoin="round"
                 >
                   <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                  <path
+                    d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                  />
                 </svg>
               </button>
             </div>
@@ -333,7 +328,8 @@ const closeModal = () => {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   border: 1px solid rgba(102, 126, 234, 0.3);
   border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(102, 126, 234, 0.1);
   max-width: 500px;
   width: 90%;
@@ -577,7 +573,7 @@ const closeModal = () => {
   margin: 0;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.7);
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   line-height: 1.6;
   overflow-x: auto;
   white-space: pre-wrap;

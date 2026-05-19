@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
-import * as fabric from 'fabric';
-import type { Icon } from '../data/iconSets';
+import { ref, onMounted, onUnmounted, watch, computed } from "vue";
+import * as fabric from "fabric";
+import type { Icon } from "../data/iconSets";
 
 const props = defineProps<{
   icon: Icon;
 }>();
 
 const emit = defineEmits<{
-  (e: 'update', svg: string): void;
+  (e: "update", svg: string): void;
 }>();
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -20,7 +20,7 @@ const flipH = ref(false);
 const flipV = ref(false);
 const opacity = ref(1);
 const strokeWidth = ref(2);
-const color = ref('#94a3b8');
+const color = ref("#94a3b8");
 
 const history = ref<fabric.Object[]>([]);
 const historyIndex = ref(-1);
@@ -38,44 +38,44 @@ interface Preset {
 
 const presets = ref<Preset[]>([
   {
-    name: '默认',
+    name: "默认",
     size: 48,
     rotation: 0,
     flipH: false,
     flipV: false,
     opacity: 1,
     strokeWidth: 2,
-    color: '#94a3b8',
+    color: "#94a3b8",
   },
   {
-    name: '大号',
+    name: "大号",
     size: 128,
     rotation: 0,
     flipH: false,
     flipV: false,
     opacity: 1,
     strokeWidth: 2,
-    color: '#94a3b8',
+    color: "#94a3b8",
   },
   {
-    name: '旋转90°',
+    name: "旋转90°",
     size: 48,
     rotation: 90,
     flipH: false,
     flipV: false,
     opacity: 1,
     strokeWidth: 2,
-    color: '#94a3b8',
+    color: "#94a3b8",
   },
   {
-    name: '水平翻转',
+    name: "水平翻转",
     size: 48,
     rotation: 0,
     flipH: true,
     flipV: false,
     opacity: 1,
     strokeWidth: 2,
-    color: '#94a3b8',
+    color: "#94a3b8",
   },
 ]);
 
@@ -87,11 +87,11 @@ onMounted(() => {
     canvas = new fabric.Canvas(canvasRef.value, {
       width: 300,
       height: 300,
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       selection: false,
       preserveObjectStacking: true,
     });
-    
+
     loadIconToCanvas();
   }
 });
@@ -102,37 +102,108 @@ onUnmounted(() => {
   }
 });
 
-watch(() => props.icon, () => {
-  reset();
-  loadIconToCanvas();
-});
+watch(
+  () => props.icon,
+  () => {
+    reset();
+    loadIconToCanvas();
+  },
+);
+
+const sanitizeSVG = (svgString: string): string => {
+  let sanitized = svgString;
+
+  // 移除 animate 标签（fabric.js 不支持）
+  sanitized = sanitized.replace(/<animate[^>]*>/g, "");
+  sanitized = sanitized.replace(/<\/animate>/g, "");
+
+  // 移除 animateTransform 标签
+  sanitized = sanitized.replace(/<animateTransform[^>]*>/g, "");
+  sanitized = sanitized.replace(/<\/animateTransform>/g, "");
+
+  // 移除 fill-opacity 的动画属性
+  sanitized = sanitized.replace(/fill-opacity="[^"]*"/g, "");
+
+  // 移除 stroke-dashoffset 属性（可能导致解析问题）
+  sanitized = sanitized.replace(/stroke-dashoffset="[^"]*"/g, "");
+
+  // 移除 stroke-dasharray 属性（可能导致解析问题）
+  sanitized = sanitized.replace(/stroke-dasharray="[^"]*"/g, "");
+
+  // 移除 animate 属性
+  sanitized = sanitized.replace(/animate[^=]*="[^"]*"/g, "");
+
+  // 移除 begin 属性
+  sanitized = sanitized.replace(/begin="[^"]*"/g, "");
+
+  // 移除 dur 属性
+  sanitized = sanitized.replace(/dur="[^"]*"/g, "");
+
+  // 移除 repeatCount 属性
+  sanitized = sanitized.replace(/repeatCount="[^"]*"/g, "");
+
+  // 移除 keyTimes 属性
+  sanitized = sanitized.replace(/keyTimes="[^"]*"/g, "");
+
+  // 移除 values 属性
+  sanitized = sanitized.replace(/values="[^"]*"/g, "");
+
+  // 移除 fill="freeze"
+  sanitized = sanitized.replace(/fill="freeze"/g, "");
+
+  return sanitized;
+};
 
 const loadIconToCanvas = () => {
   if (!canvas || !props.icon) return;
-  
+
   canvas.clear();
-  
-  fabric.loadSVGFromString(props.icon.svg, (objects: any, options: any) => {
-    if (!objects || objects.length === 0) return;
-    
-    const group = new fabric.Group(objects, {
-      ...options,
-      originX: 'center',
-      originY: 'center',
-      left: 150,
-      top: 150,
-    });
-    
-    canvas?.add(group);
-    canvas?.renderAll();
-    
-    saveState();
+
+  // 预处理 SVG，移除不支持的元素
+  const sanitizedSVG = sanitizeSVG(props.icon.svg);
+
+  fabric.loadSVGFromString(sanitizedSVG, (objects: any, options: any) => {
+    // 确保 objects 是一个有效的数组
+    if (!objects || !Array.isArray(objects) || objects.length === 0) {
+      console.error("Failed to parse SVG: objects is not an array", {
+        originalSVG: props.icon.svg.substring(0, 100) + "...",
+      });
+      return;
+    }
+
+    // 过滤掉无效的对象
+    const validObjects = objects.filter(
+      (obj: any) =>
+        obj && typeof obj === "object" && !obj.type?.includes("hidden"),
+    );
+
+    if (validObjects.length === 0) {
+      console.error("No valid objects found in SVG");
+      return;
+    }
+
+    try {
+      const group = new fabric.Group(validObjects, {
+        ...options,
+        originX: "center",
+        originY: "center",
+        left: 150,
+        top: 150,
+      });
+
+      canvas?.add(group);
+      canvas?.renderAll();
+
+      saveState();
+    } catch (error) {
+      console.error("Failed to create fabric.Group:", error);
+    }
   });
 };
 
 const saveState = () => {
   if (!canvas) return;
-  
+
   const objects = canvas.getObjects();
   if (objects.length > 0) {
     const json = canvas.toJSON();
@@ -158,7 +229,7 @@ const redo = () => {
 
 const restoreState = (state: any) => {
   if (!canvas) return;
-  
+
   canvas.loadFromJSON(state, () => {
     canvas?.renderAll();
   });
@@ -180,7 +251,7 @@ watch(rotation, (newRotation) => {
   if (!canvas) return;
   const activeObject = canvas.getObjects()[0];
   if (activeObject) {
-    activeObject.set('angle', newRotation);
+    activeObject.set("angle", newRotation);
     canvas.renderAll();
     saveState();
   }
@@ -190,8 +261,8 @@ watch([flipH, flipV], () => {
   if (!canvas) return;
   const activeObject = canvas.getObjects()[0];
   if (activeObject) {
-    activeObject.set('scaleX', flipH.value ? -1 : 1);
-    activeObject.set('scaleY', flipV.value ? -1 : 1);
+    activeObject.set("scaleX", flipH.value ? -1 : 1);
+    activeObject.set("scaleY", flipV.value ? -1 : 1);
     canvas.renderAll();
     saveState();
   }
@@ -201,7 +272,7 @@ watch(opacity, (newOpacity) => {
   if (!canvas) return;
   const activeObject = canvas.getObjects()[0];
   if (activeObject) {
-    activeObject.set('opacity', newOpacity);
+    activeObject.set("opacity", newOpacity);
     canvas.renderAll();
     saveState();
   }
@@ -210,11 +281,11 @@ watch(opacity, (newOpacity) => {
 watch(strokeWidth, (newWidth) => {
   if (!canvas) return;
   const activeObject = canvas.getObjects()[0];
-  if (activeObject && 'getObjects' in activeObject) {
+  if (activeObject && "getObjects" in activeObject) {
     const objects = (activeObject as any).getObjects();
     objects.forEach((obj: any) => {
       if (obj.strokeWidth) {
-        obj.set('strokeWidth', newWidth);
+        obj.set("strokeWidth", newWidth);
       }
     });
     canvas.renderAll();
@@ -225,14 +296,14 @@ watch(strokeWidth, (newWidth) => {
 watch(color, (newColor) => {
   if (!canvas) return;
   const activeObject = canvas.getObjects()[0];
-  if (activeObject && 'getObjects' in activeObject) {
+  if (activeObject && "getObjects" in activeObject) {
     const objects = (activeObject as any).getObjects();
     objects.forEach((obj: any) => {
-      if (obj.fill && obj.fill !== 'transparent' && obj.fill !== 'none') {
-        obj.set('fill', newColor);
+      if (obj.fill && obj.fill !== "transparent" && obj.fill !== "none") {
+        obj.set("fill", newColor);
       }
-      if (obj.stroke && obj.stroke !== 'transparent' && obj.stroke !== 'none') {
-        obj.set('stroke', newColor);
+      if (obj.stroke && obj.stroke !== "transparent" && obj.stroke !== "none") {
+        obj.set("stroke", newColor);
       }
     });
     canvas.renderAll();
@@ -261,9 +332,9 @@ const exportSVG = () => {
     width: String(size.value),
     height: String(size.value),
   });
-  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const blob = new Blob([svg], { type: "image/svg+xml" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = `${props.icon.name}.svg`;
   a.click();
@@ -272,8 +343,8 @@ const exportSVG = () => {
 
 const exportPNG = () => {
   if (!canvas) return;
-  const dataURL = canvas.toDataURL({ format: 'png', multiplier: 2 });
-  const a = document.createElement('a');
+  const dataURL = canvas.toDataURL({ format: "png", multiplier: 2 });
+  const a = document.createElement("a");
   a.href = dataURL;
   a.download = `${props.icon.name}.png`;
   a.click();
@@ -286,7 +357,7 @@ const reset = () => {
   flipV.value = false;
   opacity.value = 1;
   strokeWidth.value = 2;
-  color.value = '#94a3b8';
+  color.value = "#94a3b8";
   history.value = [];
   historyIndex.value = -1;
 };
@@ -301,23 +372,13 @@ const reset = () => {
     <div class="controls-panel">
       <div class="control-group">
         <label>尺寸</label>
-        <input 
-          type="range" 
-          v-model.number="size" 
-          min="16" 
-          max="256"
-        />
+        <input type="range" v-model.number="size" min="16" max="256" />
         <span>{{ size }}px</span>
       </div>
 
       <div class="control-group">
         <label>旋转</label>
-        <input 
-          type="range" 
-          v-model.number="rotation" 
-          min="0" 
-          max="360"
-        />
+        <input type="range" v-model.number="rotation" min="0" max="360" />
         <span>{{ rotation }}°</span>
       </div>
 
@@ -337,11 +398,11 @@ const reset = () => {
 
       <div class="control-group">
         <label>透明度</label>
-        <input 
-          type="range" 
-          v-model.number="opacity" 
-          min="0" 
-          max="1" 
+        <input
+          type="range"
+          v-model.number="opacity"
+          min="0"
+          max="1"
           step="0.1"
         />
         <span>{{ Math.round(opacity * 100) }}%</span>
@@ -349,11 +410,11 @@ const reset = () => {
 
       <div class="control-group">
         <label>描边粗细</label>
-        <input 
-          type="range" 
-          v-model.number="strokeWidth" 
-          min="0" 
-          max="10" 
+        <input
+          type="range"
+          v-model.number="strokeWidth"
+          min="0"
+          max="10"
           step="0.5"
         />
         <span>{{ strokeWidth }}px</span>
