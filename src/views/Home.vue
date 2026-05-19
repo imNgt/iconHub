@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { iconSetsList, getIconsBySet, type IconSetInfo, type Icon } from '../data/iconSets';
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import {
+  iconSetsList,
+  getIconsBySet,
+  type IconSetInfo,
+  type Icon,
+} from "../data/iconSets";
 
 const router = useRouter();
-const searchQuery = ref('');
+const searchQuery = ref("");
 
 const allIcons = computed<Icon[]>(() => {
   return iconSetsList.flatMap((set) => getIconsBySet(set.id));
@@ -15,7 +20,7 @@ const filteredIcons = ref<Icon[]>([]);
 const isSearching = computed(() => searchQuery.value.trim().length > 0);
 
 const totalIcons = computed(() =>
-  iconSetsList.reduce((sum, set) => sum + set.totalIcons, 0)
+  iconSetsList.reduce((sum, set) => sum + set.totalIcons, 0),
 );
 
 const getPreviewIcons = (setId: string) => {
@@ -33,7 +38,7 @@ const filterIcons = () => {
     (icon) =>
       icon.name.toLowerCase().includes(query) ||
       (icon.chineseName && icon.chineseName.toLowerCase().includes(query)) ||
-      icon.category.toLowerCase().includes(query)
+      icon.category.toLowerCase().includes(query),
   );
 };
 
@@ -48,7 +53,7 @@ const getIconSetName = (iconName: string): string => {
       return set.id;
     }
   }
-  return '';
+  return "";
 };
 
 const goToIconDetail = (icon: Icon) => {
@@ -68,10 +73,20 @@ const goToIconDetail = (icon: Icon) => {
     <header class="header">
       <div class="logo">
         <div class="logo-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-            <line x1="12" x2="12" y1="22.08" y2="12"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+            />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" x2="12" y1="22.08" y2="12" />
           </svg>
         </div>
         <div class="logo-text">
@@ -85,8 +100,20 @@ const goToIconDetail = (icon: Icon) => {
     <div class="stats-bar">
       <div class="stat-card">
         <div class="stat-icon sets">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+            />
           </svg>
         </div>
         <div class="stat-info">
@@ -96,10 +123,20 @@ const goToIconDetail = (icon: Icon) => {
       </div>
       <div class="stat-card">
         <div class="stat-icon icons">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
           </svg>
         </div>
         <div class="stat-info">
@@ -109,10 +146,20 @@ const goToIconDetail = (icon: Icon) => {
       </div>
       <div class="stat-card">
         <div class="stat-icon categories">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
-            <line x1="12" x2="12" y1="22" y2="15.5"/>
-            <polyline points="22 8.5 12 15.5 2 8.5"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+            <line x1="12" x2="12" y1="22" y2="15.5" />
+            <polyline points="22 8.5 12 15.5 2 8.5" />
           </svg>
         </div>
         <div class="stat-info">
@@ -124,9 +171,20 @@ const goToIconDetail = (icon: Icon) => {
 
     <div class="search-bar">
       <div class="search-wrapper">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.35-4.35"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="search-icon"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
         <input
           v-model="searchQuery"
@@ -135,10 +193,27 @@ const goToIconDetail = (icon: Icon) => {
           placeholder="搜索图标..."
           class="search-input"
         />
-        <button v-if="searchQuery" @click="searchQuery = ''; filterIcons()" class="clear-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 6 6 18"/>
-            <path d="m6 6 12 12"/>
+        <button
+          v-if="searchQuery"
+          @click="
+            searchQuery = '';
+            filterIcons();
+          "
+          class="clear-btn"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
           </svg>
         </button>
       </div>
@@ -157,8 +232,18 @@ const goToIconDetail = (icon: Icon) => {
         <div class="card-content">
           <div class="card-header">
             <div class="card-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
+                />
               </svg>
             </div>
             <div class="card-title-group">
@@ -173,7 +258,7 @@ const goToIconDetail = (icon: Icon) => {
               :key="icon.name"
               class="icon-item"
               :title="icon.chineseName || icon.name"
-              @click.stop="goToIconDetail(icon)"
+              @click.stop.prevent
             >
               <div v-html="icon.svg"></div>
             </div>
@@ -198,8 +283,18 @@ const goToIconDetail = (icon: Icon) => {
             <span class="card-license">{{ set.license }}</span>
             <button class="view-set-btn" @click="goToIconSet(set)">
               <span>前往图标库</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
             </button>
           </div>
@@ -232,9 +327,19 @@ const goToIconDetail = (icon: Icon) => {
 
     <div v-if="isSearching && filteredIcons.length === 0" class="empty-state">
       <div class="empty-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.35-4.35"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
         </svg>
       </div>
       <h3>未找到匹配的图标</h3>
@@ -257,7 +362,13 @@ const goToIconDetail = (icon: Icon) => {
 <style scoped>
 .home-container {
   min-height: 100vh;
-  background: linear-gradient(160deg, #0a0a14 0%, #111128 30%, #0f1a2e 60%, #0d1525 100%);
+  background: linear-gradient(
+    160deg,
+    #0a0a14 0%,
+    #111128 30%,
+    #0f1a2e 60%,
+    #0d1525 100%
+  );
   position: relative;
   overflow: hidden;
 }
@@ -268,7 +379,11 @@ const goToIconDetail = (icon: Icon) => {
   right: -8%;
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.12) 0%, transparent 65%);
+  background: radial-gradient(
+    circle,
+    rgba(102, 126, 234, 0.12) 0%,
+    transparent 65%
+  );
   border-radius: 50%;
   pointer-events: none;
   animation: bgFloat 20s ease-in-out infinite;
@@ -280,16 +395,27 @@ const goToIconDetail = (icon: Icon) => {
   left: -12%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(118, 75, 162, 0.08) 0%, transparent 65%);
+  background: radial-gradient(
+    circle,
+    rgba(118, 75, 162, 0.08) 0%,
+    transparent 65%
+  );
   border-radius: 50%;
   pointer-events: none;
   animation: bgFloat 25s ease-in-out infinite reverse;
 }
 
 @keyframes bgFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -20px) scale(1.05); }
-  66% { transform: translate(-20px, 15px) scale(0.95); }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  66% {
+    transform: translate(-20px, 15px) scale(0.95);
+  }
 }
 
 .bg-grid {
@@ -328,13 +454,19 @@ const goToIconDetail = (icon: Icon) => {
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow:
+    0 8px 32px rgba(102, 126, 234, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .logo-icon:hover {
   transform: scale(1.05) rotate(-5deg);
-  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  box-shadow:
+    0 12px 40px rgba(102, 126, 234, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .logo-icon svg {
@@ -363,7 +495,11 @@ const goToIconDetail = (icon: Icon) => {
   font-size: 0.65rem;
   font-weight: 700;
   padding: 3px 8px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.3),
+    rgba(118, 75, 162, 0.3)
+  );
   border: 1px solid rgba(167, 139, 250, 0.3);
   border-radius: 6px;
   color: #c4b5fd;
@@ -483,7 +619,9 @@ const goToIconDetail = (icon: Icon) => {
   outline: none;
   border-color: rgba(102, 126, 234, 0.4);
   background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 32px rgba(102, 126, 234, 0.15), 0 0 0 3px rgba(102, 126, 234, 0.08);
+  box-shadow:
+    0 4px 32px rgba(102, 126, 234, 0.15),
+    0 0 0 3px rgba(102, 126, 234, 0.08);
 }
 
 .search-input::placeholder {
@@ -542,7 +680,13 @@ const goToIconDetail = (icon: Icon) => {
   position: absolute;
   inset: -1px;
   border-radius: 24px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), transparent 40%, transparent 60%, rgba(118, 75, 162, 0.3));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.3),
+    transparent 40%,
+    transparent 60%,
+    rgba(118, 75, 162, 0.3)
+  );
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -559,7 +703,11 @@ const goToIconDetail = (icon: Icon) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.06) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.08) 0%,
+    rgba(118, 75, 162, 0.06) 100%
+  );
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -569,7 +717,9 @@ const goToIconDetail = (icon: Icon) => {
   transform: translateY(-4px);
   border-color: rgba(102, 126, 234, 0.2);
   background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 0 0 40px rgba(102, 126, 234, 0.08);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(102, 126, 234, 0.08);
 }
 
 .icon-set-card:hover .card-glow {
@@ -591,7 +741,11 @@ const goToIconDetail = (icon: Icon) => {
 .card-icon {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.2),
+    rgba(118, 75, 162, 0.2)
+  );
   border-radius: 14px;
   display: flex;
   align-items: center;
