@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import type { Icon } from '../data/iconSets';
 import BaseNumberInput from './base/BaseNumberInput.vue';
+import IconEditor from './IconEditor.vue';
 
 const props = defineProps<{
   visible: boolean;
@@ -14,6 +15,7 @@ const emit = defineEmits<{
   (e: 'close'): void;
 }>();
 
+const showEditor = ref(false);
 const previewSize = ref(48);
 const previewColor = ref('#94a3b8');
 const previewColor2 = ref('#764ba2');
@@ -182,7 +184,25 @@ const closeModal = () => {
             <span class="modal-category">{{ icon.category }}</span>
           </div>
 
-          <div class="preview-controls">
+          <button class="editor-toggle-btn" @click="showEditor = !showEditor">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
+            {{ showEditor ? '关闭编辑器' : '打开编辑器' }}
+          </button>
+
+          <div v-if="!showEditor" class="preview-controls">
             <div class="preview-size-control">
               <label>尺寸</label>
               <BaseNumberInput v-model="previewSize" :min="16" :max="256" />
@@ -254,7 +274,9 @@ const closeModal = () => {
             </button>
           </div>
 
-          <div class="code-preview">
+          <IconEditor v-if="showEditor" :icon="icon" />
+
+          <div v-if="!showEditor" class="code-preview">
             <div class="code-header">
               <label>SVG 代码</label>
               <button class="copy-code-btn" @click="copySvg">
@@ -389,6 +411,30 @@ const closeModal = () => {
   justify-content: center;
   gap: 12px;
   margin-bottom: 24px;
+}
+
+.editor-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.editor-toggle-btn:hover {
+  background: rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
 }
 
 .modal-set,
