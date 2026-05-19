@@ -21,20 +21,94 @@ const selectedIcon = ref<Icon | null>(null);
 const copySuccess = ref(false);
 const previewSize = ref(48);
 const previewColor = ref("#94a3b8");
+const previewColor2 = ref("#764ba2");
 
 const previewSvg = computed(() => {
   if (!selectedIcon.value) return "";
-  return selectedIcon.value.svg
+  let svg = selectedIcon.value.svg;
+
+  if (setId.value === "flat") {
+    svg = svg.replace(
+      /(fill|stroke)="(?!none|currentColor|url|#fff\b|#ffffff\b)(#[0-9A-Fa-f]{3,6})"/g,
+      '$1="currentColor"',
+    );
+  } else if (setId.value === "gradient") {
+    // 生成唯一的渐变 ID
+    const gradientId = `g-${previewColor.value.replace("#", "")}-${previewColor2.value.replace("#", "")}`;
+
+    // 提取原始渐变 ID（如 g52）
+    const originalId = svg.match(/id="(g\d+)"/)?.[1];
+
+    if (originalId) {
+      // 替换渐变定义和引用的 ID
+      svg = svg.replace(
+        new RegExp(`id="${originalId}"`, "g"),
+        `id="${gradientId}"`,
+      );
+      svg = svg.replace(
+        new RegExp(`url\\(#${originalId}\\)`, "g"),
+        `url(#${gradientId})`,
+      );
+    }
+
+    // 替换渐变颜色
+    let stopIndex = 0;
+    svg = svg.replace(
+      /stop-color:#[0-9A-Fa-f]{3,6}/g,
+      () =>
+        `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
+    );
+  }
+
+  return svg
     .replace(/width="[^"]*"/, `width="${previewSize.value}"`)
     .replace(/height="[^"]*"/, `height="${previewSize.value}"`);
 });
 
 const downloadSvgData = computed(() => {
   if (!selectedIcon.value) return "";
-  return selectedIcon.value.svg
+  let svg = selectedIcon.value.svg;
+
+  if (setId.value === "flat") {
+    svg = svg
+      .replace(
+        /(fill|stroke)="(?!none|currentColor|url|#fff\b|#ffffff\b)(#[0-9A-Fa-f]{3,6})"/g,
+        `$1="${previewColor.value}"`,
+      )
+      .replace(/currentColor/g, previewColor.value);
+  } else if (setId.value === "gradient") {
+    // 生成唯一的渐变 ID
+    const gradientId = `g-${previewColor.value.replace("#", "")}-${previewColor2.value.replace("#", "")}`;
+
+    // 提取原始渐变 ID（如 g52）
+    const originalId = svg.match(/id="(g\d+)"/)?.[1];
+
+    if (originalId) {
+      // 替换渐变定义和引用的 ID
+      svg = svg.replace(
+        new RegExp(`id="${originalId}"`, "g"),
+        `id="${gradientId}"`,
+      );
+      svg = svg.replace(
+        new RegExp(`url\\(#${originalId}\\)`, "g"),
+        `url(#${gradientId})`,
+      );
+    }
+
+    // 替换渐变颜色
+    let stopIndex = 0;
+    svg = svg.replace(
+      /stop-color:#[0-9A-Fa-f]{3,6}/g,
+      () =>
+        `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
+    );
+  } else {
+    svg = svg.replace(/currentColor/g, previewColor.value);
+  }
+
+  return svg
     .replace(/width="[^"]*"/, `width="${previewSize.value}"`)
-    .replace(/height="[^"]*"/, `height="${previewSize.value}"`)
-    .replace(/currentColor/g, previewColor.value);
+    .replace(/height="[^"]*"/, `height="${previewSize.value}"`);
 });
 
 const categories = computed(() => {
@@ -128,12 +202,27 @@ const copySvg = async (icon: Icon) => {
   }
 };
 
+const extractGradientColors = (svg: string): string[] => {
+  const matches = svg.match(/stop-color:#[0-9A-Fa-f]{3,6}/g);
+  if (matches && matches.length >= 2) {
+    return [matches[0].slice(11), matches[1].slice(11)];
+  }
+  return ["#667eea", "#764ba2"];
+};
+
 const openIconModal = (icon: Icon) => {
   selectedIcon.value = icon;
   showModal.value = true;
   copySuccess.value = false;
   previewSize.value = 48;
-  previewColor.value = "#94a3b8";
+
+  if (setId.value === "gradient") {
+    const [start, end] = extractGradientColors(icon.svg);
+    previewColor.value = start;
+    previewColor2.value = end;
+  } else {
+    previewColor.value = "#94a3b8";
+  }
 };
 
 const closeModal = () => {
@@ -412,6 +501,7 @@ onMounted(() => {
             <div
               class="modal-icon-preview"
               :style="{ color: previewColor }"
+              :key="previewSvg"
               v-html="previewSvg"
             ></div>
 
@@ -428,7 +518,25 @@ onMounted(() => {
                 <label>尺寸</label>
                 <BaseNumberInput v-model="previewSize" :min="16" :max="256" />
               </div>
-              <div class="preview-color-control">
+              <template v-if="setId === 'gradient'">
+                <div class="preview-color-control">
+                  <label>渐变起点</label>
+                  <input
+                    type="color"
+                    v-model="previewColor"
+                    class="color-picker"
+                  />
+                </div>
+                <div class="preview-color-control">
+                  <label>渐变终点</label>
+                  <input
+                    type="color"
+                    v-model="previewColor2"
+                    class="color-picker"
+                  />
+                </div>
+              </template>
+              <div v-else class="preview-color-control">
                 <label>颜色</label>
                 <input
                   type="color"
