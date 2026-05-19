@@ -28,3 +28,7 @@ node_modules
 
 # OS files
 Thumbs.db
+
+# Build outputs
+dist/
+docs/assets/
