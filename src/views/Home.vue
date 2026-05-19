@@ -88,11 +88,16 @@ const goToIconDetail = (icon: Icon) => {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <path
-              d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
-            />
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-            <line x1="12" x2="12" y1="22.08" y2="12" />
+            <text
+              x="12"
+              y="16"
+              text-anchor="middle"
+              font-size="16"
+              font-weight="bold"
+              fill="currentColor"
+            >
+              IH
+            </text>
           </svg>
         </div>
         <div class="logo-text">
@@ -237,24 +242,28 @@ const goToIconDetail = (icon: Icon) => {
 
         <div class="card-content">
           <div class="card-header">
-            <div class="card-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
-                />
-              </svg>
-            </div>
             <div class="card-title-group">
               <h3>{{ set.name }}</h3>
               <span class="card-count">{{ set.totalIcons }} 个图标</span>
+            </div>
+            <div class="card-header-right">
+              <span class="card-license">{{ set.license }}</span>
+              <button class="view-set-btn" @click="goToIconSet(set)">
+                <span>前往图标库</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -283,26 +292,6 @@ const goToIconDetail = (icon: Icon) => {
                 +{{ set.categories.length - 3 }}
               </span>
             </div>
-          </div>
-
-          <div class="card-footer">
-            <span class="card-license">{{ set.license }}</span>
-            <button class="view-set-btn" @click="goToIconSet(set)">
-              <span>前往图标库</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
           </div>
         </div>
       </div>
@@ -748,42 +737,33 @@ const goToIconDetail = (icon: Icon) => {
 .card-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 22px;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.card-icon {
-  width: 44px;
-  height: 44px;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2),
-    rgba(118, 75, 162, 0.2)
-  );
-  border-radius: 14px;
+.card-header-right {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #a78bfa;
-  flex-shrink: 0;
-}
-
-.card-icon svg {
-  width: 22px;
-  height: 22px;
+  gap: 14px;
 }
 
 .card-title-group {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .card-title-group h3 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: white;
   font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
@@ -857,14 +837,6 @@ const goToIconDetail = (icon: Icon) => {
   border-color: rgba(102, 126, 234, 0.2);
 }
 
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
 .card-license {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.35);
@@ -874,23 +846,25 @@ const goToIconDetail = (icon: Icon) => {
 .view-set-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
+  gap: 4px;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+}
+
+.view-set-btn:hover {
+  background: rgba(102, 126, 234, 0.15);
+  color: #a78bfa;
 }
 
 .icon-set-card:hover .view-set-btn {
-  background: rgba(102, 126, 234, 0.2);
-  color: #667eea;
-  border-color: rgba(102, 126, 234, 0.4);
-  transform: translateX(4px);
+  color: #a78bfa;
 }
 
 .empty-state {

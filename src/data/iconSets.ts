@@ -628,7 +628,7 @@ export const flatSet: IconSetInfo = {
 // Tabler 图标库
 export const tablerSet: IconSetInfo = {
   id: "tabler",
-  name: "Tabler Icons",
+  name: "Tabler 图标",
   prefix: "tabler-",
   totalIcons: tablerIcons.length,
   author: "Paweł Kuna",
@@ -639,7 +639,7 @@ export const tablerSet: IconSetInfo = {
 };
 
 // 图标库列表
-export const iconSetsList: IconSetInfo[] = [lucideSet, gradientSet, flatSet, tablerSet];
+export const iconSetsList: IconSetInfo[] = [lucideSet, tablerSet, gradientSet, flatSet];
 
 // 获取图标库图标
 export function getIconsBySet(setId: string): Icon[] {
