@@ -7,9 +7,14 @@ import {
   type IconSetInfo,
   type Icon,
 } from "../data/iconSets";
+import IconDetailModal from "../components/IconDetailModal.vue";
 
 const router = useRouter();
 const searchQuery = ref("");
+const showModal = ref(false);
+const selectedIcon = ref<Icon | null>(null);
+const selectedSetName = ref<string>("");
+const selectedSetId = ref<string>("");
 
 const allIcons = computed<Icon[]>(() => {
   return iconSetsList.flatMap((set) => getIconsBySet(set.id));
@@ -46,21 +51,22 @@ const goToIconSet = (set: IconSetInfo) => {
   router.push(`/icons/${set.id}`);
 };
 
-const getIconSetName = (iconName: string): string => {
+const getIconSetInfo = (iconName: string): { name: string; id: string } => {
   for (const set of iconSetsList) {
     const icons = getIconsBySet(set.id);
     if (icons.some((i) => i.name === iconName)) {
-      return set.id;
+      return { name: set.name, id: set.id };
     }
   }
-  return "";
+  return { name: "", id: "" };
 };
 
 const goToIconDetail = (icon: Icon) => {
-  const setId = getIconSetName(icon.name);
-  if (setId) {
-    router.push(`/icons/${setId}?icon=${icon.name}`);
-  }
+  selectedIcon.value = icon;
+  const setInfo = getIconSetInfo(icon.name);
+  selectedSetName.value = setInfo.name;
+  selectedSetId.value = setInfo.id;
+  showModal.value = true;
 };
 </script>
 
@@ -258,7 +264,7 @@ const goToIconDetail = (icon: Icon) => {
               :key="icon.name"
               class="icon-item"
               :title="icon.chineseName || icon.name"
-              @click.stop.prevent
+              @click.stop="goToIconDetail(icon)"
             >
               <div v-html="icon.svg"></div>
             </div>
@@ -356,6 +362,14 @@ const goToIconDetail = (icon: Icon) => {
         <p>所有图标均遵循其原始开源许可证</p>
       </div>
     </footer>
+
+    <IconDetailModal
+      :visible="showModal"
+      :icon="selectedIcon"
+      :set-name="selectedSetName"
+      :set-id="selectedSetId"
+      @close="showModal = false"
+    />
   </div>
 </template>
 

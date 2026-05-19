@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { iconSetsList, getIconsBySet, type Icon } from "../data/iconSets";
 import BaseNumberInput from "../components/base/BaseNumberInput.vue";
+import IconDetailModal from "../components/IconDetailModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -18,125 +19,6 @@ const searchQuery = ref("");
 const selectedCategory = ref("全部");
 const showModal = ref(false);
 const selectedIcon = ref<Icon | null>(null);
-const copySuccess = ref(false);
-const previewSize = ref(48);
-const previewColor = ref("#94a3b8");
-const previewColor2 = ref("#764ba2");
-
-const previewSvg = computed(() => {
-  if (!selectedIcon.value) return "";
-  let svg = selectedIcon.value.svg;
-
-  if (setId.value === "flat") {
-    svg = svg.replace(
-      /(fill|stroke)="(?!none|currentColor|url|#fff\b|#ffffff\b)(#[0-9A-Fa-f]{3,6})"/g,
-      '$1="currentColor"',
-    );
-  } else if (setId.value === "gradient") {
-    // 生成唯一的渐变 ID
-    const gradientId = `g-${previewColor.value.replace("#", "")}-${previewColor2.value.replace("#", "")}`;
-
-    // 提取原始渐变 ID（如 g52）
-    const originalId = svg.match(/id="(g\d+)"/)?.[1];
-
-    if (originalId) {
-      // 替换渐变定义和引用的 ID
-      svg = svg.replace(
-        new RegExp(`id="${originalId}"`, "g"),
-        `id="${gradientId}"`,
-      );
-      svg = svg.replace(
-        new RegExp(`url\\(#${originalId}\\)`, "g"),
-        `url(#${gradientId})`,
-      );
-    }
-
-    // 替换渐变颜色
-    let stopIndex = 0;
-    svg = svg.replace(
-      /stop-color:#[0-9A-Fa-f]{3,6}/g,
-      () =>
-        `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
-    );
-  }
-
-  return svg
-    .replace(/width="[^"]*"/, `width="${previewSize.value}"`)
-    .replace(/height="[^"]*"/, `height="${previewSize.value}"`);
-});
-
-// 格式化后的 SVG 代码（用于代码预览）
-const formattedSvgCode = computed(() => {
-  if (!selectedIcon.value) return "";
-
-  // 使用 previewSvg 作为基础（已经处理过颜色替换）
-  let svg = previewSvg.value;
-
-  // 格式化 SVG 代码（添加缩进）
-  try {
-    // 简单的格式化：在标签之间添加换行和缩进
-    let formatted = svg
-      .replace(/></g, ">\n<")
-      .split("\n")
-      .map((line, i) => {
-        const indent = line.match(/^(<\/?[a-z]+)/)?.[1]?.startsWith("</")
-          ? Math.max(0, i - 1) * 2
-          : i * 2;
-        return "  ".repeat(Math.min(indent, 6)) + line;
-      })
-      .join("\n");
-
-    return formatted;
-  } catch {
-    return svg;
-  }
-});
-
-const downloadSvgData = computed(() => {
-  if (!selectedIcon.value) return "";
-  let svg = selectedIcon.value.svg;
-
-  if (setId.value === "flat") {
-    svg = svg
-      .replace(
-        /(fill|stroke)="(?!none|currentColor|url|#fff\b|#ffffff\b)(#[0-9A-Fa-f]{3,6})"/g,
-        `$1="${previewColor.value}"`,
-      )
-      .replace(/currentColor/g, previewColor.value);
-  } else if (setId.value === "gradient") {
-    // 生成唯一的渐变 ID
-    const gradientId = `g-${previewColor.value.replace("#", "")}-${previewColor2.value.replace("#", "")}`;
-
-    // 提取原始渐变 ID（如 g52）
-    const originalId = svg.match(/id="(g\d+)"/)?.[1];
-
-    if (originalId) {
-      // 替换渐变定义和引用的 ID
-      svg = svg.replace(
-        new RegExp(`id="${originalId}"`, "g"),
-        `id="${gradientId}"`,
-      );
-      svg = svg.replace(
-        new RegExp(`url\\(#${originalId}\\)`, "g"),
-        `url(#${gradientId})`,
-      );
-    }
-
-    // 替换渐变颜色
-    let stopIndex = 0;
-    svg = svg.replace(
-      /stop-color:#[0-9A-Fa-f]{3,6}/g,
-      () =>
-        `stop-color:${++stopIndex === 1 ? previewColor.value : previewColor2.value}`,
-    );
-  } else {
-    svg = svg.replace(/currentColor/g, previewColor.value);
-  }
-
-  return svg
-    .replace(/width="[^"]*"/, `width="${previewSize.value}"`)
-    .replace(/height="[^"]*"/, `height="${previewSize.value}"`);
-});
 
 const categories = computed(() => {
   const cats = new Set<string>();
@@ -166,95 +48,9 @@ const filterIcons = () => {
   filteredIcons.value = result;
 };
 
-const downloadSvg = (icon: Icon) => {
-  const blob = new Blob([downloadSvgData.value], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${iconSet.value?.prefix || ""}${icon.name}.svg`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
-const downloadPng = (icon: Icon) => {
-  const size = previewSize.value;
-  try {
-    const svgData = downloadSvgData.value;
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = size * 2;
-    canvas.height = size * 2;
-
-    const img = new Image();
-    const svgBlob = new Blob([svgData], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-    const url = URL.createObjectURL(svgBlob);
-
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, size * 2, size * 2);
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const pngUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = pngUrl;
-        a.download = `${iconSet.value?.prefix || ""}${icon.name}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(pngUrl);
-      }, "image/png");
-      URL.revokeObjectURL(url);
-    };
-
-    img.src = url;
-  } catch (e) {
-    console.error("PNG download failed:", e);
-  }
-};
-
-const copySvg = async (icon: Icon) => {
-  try {
-    await navigator.clipboard.writeText(icon.svg);
-    copySuccess.value = true;
-    setTimeout(() => {
-      copySuccess.value = false;
-    }, 2000);
-  } catch (e) {
-    console.error("Copy failed:", e);
-  }
-};
-
-const extractGradientColors = (svg: string): string[] => {
-  const matches = svg.match(/stop-color:#[0-9A-Fa-f]{3,6}/g);
-  if (matches && matches.length >= 2) {
-    return [matches[0].slice(11), matches[1].slice(11)];
-  }
-  return ["#667eea", "#764ba2"];
-};
-
 const openIconModal = (icon: Icon) => {
   selectedIcon.value = icon;
   showModal.value = true;
-  copySuccess.value = false;
-  previewSize.value = 48;
-
-  if (setId.value === "gradient") {
-    const [start, end] = extractGradientColors(icon.svg);
-    previewColor.value = start;
-    previewColor2.value = end;
-  } else {
-    previewColor.value = "#94a3b8";
-  }
-};
-
-const closeModal = () => {
-  showModal.value = false;
-  selectedIcon.value = null;
 };
 
 const goBack = () => {
@@ -515,149 +311,13 @@ onMounted(() => {
       <button @click="goBack">返回首页</button>
     </div>
 
-    <Teleport to="body">
-      <div v-if="showModal" class="modal-overlay" @click="closeModal">
-        <div class="modal-content" @click.stop>
-          <button class="close-btn" @click="closeModal">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-
-          <div v-if="selectedIcon" class="modal-body">
-            <div
-              class="modal-icon-preview"
-              :style="{ color: previewColor }"
-              :key="previewSvg"
-              v-html="previewSvg"
-            ></div>
-
-            <h2 class="modal-title">
-              {{ selectedIcon.chineseName || selectedIcon.name }}
-            </h2>
-            <div class="modal-meta">
-              <span class="modal-set">{{ iconSet?.name }}</span>
-              <span class="modal-category">{{ selectedIcon.category }}</span>
-            </div>
-
-            <div class="preview-controls">
-              <div class="preview-size-control">
-                <label>尺寸</label>
-                <BaseNumberInput v-model="previewSize" :min="16" :max="256" />
-              </div>
-              <template v-if="setId === 'gradient'">
-                <div class="preview-color-control">
-                  <label>渐变起点</label>
-                  <input
-                    type="color"
-                    v-model="previewColor"
-                    class="color-picker"
-                  />
-                </div>
-                <div class="preview-color-control">
-                  <label>渐变终点</label>
-                  <input
-                    type="color"
-                    v-model="previewColor2"
-                    class="color-picker"
-                  />
-                </div>
-              </template>
-              <div v-else class="preview-color-control">
-                <label>颜色</label>
-                <input
-                  type="color"
-                  v-model="previewColor"
-                  class="color-picker"
-                />
-              </div>
-            </div>
-
-            <div class="action-buttons">
-              <button
-                class="action-btn primary"
-                @click="downloadSvg(selectedIcon)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" x2="12" y1="15" y2="3" />
-                </svg>
-                下载 SVG
-              </button>
-              <button
-                class="action-btn secondary"
-                @click="downloadPng(selectedIcon)"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <circle cx="16.5" cy="16.5" r="1.5" />
-                </svg>
-                下载 PNG
-              </button>
-            </div>
-
-            <div class="code-preview">
-              <div class="code-header">
-                <label>SVG 代码</label>
-                <button class="copy-code-btn" @click="copySvg(selectedIcon)">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                    <path
-                      d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
-                    />
-                  </svg>
-                  {{ copySuccess ? "已复制" : "复制" }}
-                </button>
-              </div>
-              <pre><code>{{ formattedSvgCode }}</code></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
+    <IconDetailModal
+      :visible="showModal"
+      :icon="selectedIcon"
+      :set-name="iconSet?.name"
+      :set-id="setId"
+      @close="showModal = false"
+    />
   </div>
 </template>
 
