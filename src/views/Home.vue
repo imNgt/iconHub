@@ -54,7 +54,7 @@ const getIconSetName = (iconName: string): string => {
 const goToIconDetail = (icon: Icon) => {
   const setId = getIconSetName(icon.name);
   if (setId) {
-    router.push(`/icons/${setId}`);
+    router.push(`/icons/${setId}?icon=${icon.name}`);
   }
 };
 </script>
@@ -173,6 +173,7 @@ const goToIconDetail = (icon: Icon) => {
               :key="icon.name"
               class="icon-item"
               :title="icon.chineseName || icon.name"
+              @click.stop="goToIconDetail(icon)"
             >
               <div v-html="icon.svg"></div>
             </div>
@@ -195,11 +196,12 @@ const goToIconDetail = (icon: Icon) => {
 
           <div class="card-footer">
             <span class="card-license">{{ set.license }}</span>
-            <div class="arrow">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button class="view-set-btn" @click="goToIconSet(set)">
+              <span>前往图标库</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
-            </div>
+            </button>
           </div>
         </div>
       </div>
@@ -701,14 +703,25 @@ const goToIconDetail = (icon: Icon) => {
   font-weight: 500;
 }
 
-.arrow {
-  color: rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
+.view-set-btn {
   display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.icon-set-card:hover .arrow {
+.icon-set-card:hover .view-set-btn {
+  background: rgba(102, 126, 234, 0.2);
   color: #667eea;
+  border-color: rgba(102, 126, 234, 0.4);
   transform: translateX(4px);
 }
 

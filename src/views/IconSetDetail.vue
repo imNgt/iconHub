@@ -65,6 +65,33 @@ const previewSvg = computed(() => {
     .replace(/height="[^"]*"/, `height="${previewSize.value}"`);
 });
 
+// 格式化后的 SVG 代码（用于代码预览）
+const formattedSvgCode = computed(() => {
+  if (!selectedIcon.value) return "";
+
+  // 使用 previewSvg 作为基础（已经处理过颜色替换）
+  let svg = previewSvg.value;
+
+  // 格式化 SVG 代码（添加缩进）
+  try {
+    // 简单的格式化：在标签之间添加换行和缩进
+    let formatted = svg
+      .replace(/></g, ">\n<")
+      .split("\n")
+      .map((line, i) => {
+        const indent = line.match(/^(<\/?[a-z]+)/)?.[1]?.startsWith("</")
+          ? Math.max(0, i - 1) * 2
+          : i * 2;
+        return "  ".repeat(Math.min(indent, 6)) + line;
+      })
+      .join("\n");
+
+    return formatted;
+  } catch {
+    return svg;
+  }
+});
+
 const downloadSvgData = computed(() => {
   if (!selectedIcon.value) return "";
   let svg = selectedIcon.value.svg;
@@ -242,6 +269,17 @@ onMounted(() => {
   if (iconSet.value) {
     allIcons.value = getIconsBySet(setId.value);
     filteredIcons.value = allIcons.value;
+  }
+
+  // 检查 URL 参数中是否有 icon 参数，自动打开图标详情
+  const iconName = route.query.icon;
+  if (iconName && typeof iconName === "string") {
+    const icon = allIcons.value.find((i) => i.name === iconName);
+    if (icon) {
+      setTimeout(() => {
+        openIconModal(icon);
+      }, 300);
+    }
   }
 });
 </script>
@@ -614,7 +652,7 @@ onMounted(() => {
                   {{ copySuccess ? "已复制" : "复制" }}
                 </button>
               </div>
-              <pre><code>{{ selectedIcon.svg }}</code></pre>
+              <pre><code>{{ formattedSvgCode }}</code></pre>
             </div>
           </div>
         </div>
