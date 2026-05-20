@@ -523,7 +523,7 @@ const goToIconDetail = (icon: Icon) => {
   justify-content: center;
   gap: 16px;
   max-width: 600px;
-  margin: 32px auto 40px;
+  margin: 28px auto 48px;
   position: relative;
   z-index: 1;
   padding: 0 20px;
@@ -592,8 +592,8 @@ const goToIconDetail = (icon: Icon) => {
 }
 
 .search-bar {
-  max-width: 560px;
-  margin: 0 auto 56px;
+  max-width: 580px;
+  margin: 0 auto 48px;
   position: relative;
   z-index: 1;
   padding: 0 20px;
@@ -668,13 +668,13 @@ const goToIconDetail = (icon: Icon) => {
 }
 
 .icon-set-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  padding: 28px;
+  padding: 24px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
   overflow: hidden;
 }
@@ -740,16 +740,21 @@ const goToIconDetail = (icon: Icon) => {
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 20px;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .card-header-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .card-title-group {
@@ -775,12 +780,13 @@ const goToIconDetail = (icon: Icon) => {
 .icons-preview {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
-  padding: 18px;
-  background: rgba(0, 0, 0, 0.2);
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
 }
 
 .icon-item {
@@ -789,16 +795,17 @@ const goToIconDetail = (icon: Icon) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.65);
-  transition: all 0.25s ease;
-  border-radius: 10px;
-  padding: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border-radius: 12px;
+  padding: 8px;
 }
 
 .icon-item:hover {
-  transform: scale(1.25);
+  transform: scale(1.2);
   color: #c4b5fd;
-  background: rgba(102, 126, 234, 0.15);
+  background: rgba(102, 126, 234, 0.18);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
 }
 
 .icon-item :deep(svg) {
@@ -807,7 +814,7 @@ const goToIconDetail = (icon: Icon) => {
 }
 
 .tags-row {
-  margin-bottom: 18px;
+  margin-bottom: 4px;
 }
 
 .categories {
@@ -818,23 +825,24 @@ const goToIconDetail = (icon: Icon) => {
 
 .category-tag {
   padding: 5px 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 20px;
-  font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: all 0.2s ease;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.25s ease;
 }
 
 .category-tag:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
+  background: rgba(102, 126, 234, 0.12);
+  color: #a78bfa;
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 .category-tag.more {
   background: rgba(102, 126, 234, 0.15);
   color: #a78bfa;
-  border-color: rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.25);
 }
 
 .card-license {
