@@ -409,30 +409,6 @@ const closeModal = () => {
   margin-bottom: 24px;
 }
 
-.editor-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 20px;
-  background: rgba(102, 126, 234, 0.2);
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  border-radius: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 24px;
-}
-
-.editor-toggle-btn:hover {
-  background: rgba(102, 126, 234, 0.3);
-  border-color: rgba(102, 126, 234, 0.5);
-  transform: translateY(-2px);
-}
-
 .modal-set,
 .modal-category {
   padding: 6px 12px;

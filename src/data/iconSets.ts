@@ -17,43 +17,26 @@ export interface IconSetInfo {
   categories: string[];
 }
 
-// 导入线框图标 (line-md)
-import { lineMdIcons } from "./lineMdIcons";
 // 导入扩展渐变图标
 import { gradientIconsExtended } from "./gradientIconsExtended";
 // 导入扩展扁平图标
 import { flatIconsExtended } from "./flatIconsExtended";
-// 导入 Tabler 图标
-import { tablerIcons } from "./tablerIcons";
+// 导入线框图标
+import { outlineIconsList } from "./outlineIcons";
 
-// Line-md Icons - Material风格线框图标
-export const lucideSet: IconSetInfo = {
-  id: "line-md",
-  name: "线框图标",
-  prefix: "line-md-",
-  totalIcons: lineMdIcons.length,
-  author: "Vjacheslav Trushkin",
-  website: "https://icon-sets.iconify.design/line-md/",
+export const outlineIcons: Icon[] = outlineIconsList;
+
+// 线框风格图标库（支持多种风格切换）
+export const outlineSet: IconSetInfo = {
+  id: "outline",
+  name: "线框风格",
+  prefix: "outline-",
+  totalIcons: outlineIcons.length,
+  author: "IconHub",
+  website: "https://iconhub.dev",
   license: "MIT",
-  description: "Material Design风格的线框图标，包含动画效果",
-  categories: [
-    "Account",
-    "Actions",
-    "Alert",
-    "Audio",
-    "Communication",
-    "Content",
-    "Device",
-    "Editor",
-    "Files",
-    "Hardware",
-    "Image",
-    "Maps",
-    "Navigation",
-    "Notification",
-    "Social",
-    "Weather",
-  ],
+  description: "支持多种风格切换的线框图标，可切换线框、填充、双色、多色和渐变风格",
+  categories: ["导航", "操作", "状态", "用户", "内容", "通讯", "媒体", "设备", "社交"],
 };
 
 export const gradientIcons: Icon[] = [
@@ -625,33 +608,18 @@ export const flatSet: IconSetInfo = {
   categories: ["导航", "操作", "状态", "用户", "内容", "通讯", "媒体", "设备", "天气", "通知", "设计", "交通", "地图", "数据", "开发", "财务"],
 };
 
-// Tabler 图标库
-export const tablerSet: IconSetInfo = {
-  id: "tabler",
-  name: "Tabler 图标",
-  prefix: "tabler-",
-  totalIcons: tablerIcons.length,
-  author: "Paweł Kuna",
-  website: "https://icon-sets.iconify.design/tabler/",
-  license: "MIT",
-  description: "Tabler Icons 是一套开源线性图标集，包含 2000+ 精美图标，适合各种 Web 和移动端应用",
-  categories: ["箭头", "导航", "操作", "状态", "用户", "内容", "通讯", "媒体", "设备", "天气", "通知", "设计", "交通", "地图", "数据", "开发", "财务", "品牌", "医疗", "运动", "食物", "其他"],
-};
-
 // 图标库列表
-export const iconSetsList: IconSetInfo[] = [lucideSet, tablerSet, gradientSet, flatSet];
+export const iconSetsList: IconSetInfo[] = [outlineSet, gradientSet, flatSet];
 
 // 获取图标库图标
 export function getIconsBySet(setId: string): Icon[] {
   switch (setId) {
-    case "line-md":
-      return lineMdIcons;
+    case "outline":
+      return outlineIcons;
     case "gradient":
       return gradientIcons;
     case "flat":
       return flatIcons;
-    case "tabler":
-      return tablerIcons;
     default:
       return [];
   }
